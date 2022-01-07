@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Poema</title>
+ 
+</head>
+
+<body>
+
+    <style>
+        div.a{
+            text-align: center;
+        }
+    </style>
+
+    <div class='a'>
+    <h1 id="some1">O QUE </h1>
+    <h1 id="move">MOVE</h1>
+    <h1 id="some2">É O QUE </h1>
+    <h1 id="some3">FICA</h1>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+<script>
+
+    //Faz "move" desaparecer.
+    $('#some1').fadeOut(7000);
+    $('#some2').fadeOut(7000);
+    $('#some3').fadeOut(7000);
+
+    //Move o "fica"
+    var esq = 0;
+    var aux = 0
+
+    
+    var move_em_movimento = function(){
+       if (esq<200 && aux==0){
+            $('#move').offset({ left: esq});
+            esq++;
+            }else{
+                
+                $('#move').fadeOut(1000);
+        }
+        setTimeout('#move', 2000);
+    } ;
+    
+    setInterval( move_em_movimento,40);
+
+
+    
+
+    
+</script>
+
+
+</body>
+</html>
