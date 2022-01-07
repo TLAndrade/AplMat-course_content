@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Monty Hall Game</title>
+</head>
+<body>
+
+		<style>
+        div.a{
+            text-align: center;
+        }
+		</style>
+		
+	<div class='a'>
+	<h1>MONTY HALL</h1>
+	<h3>Escolha uma porta:</h3>
+	</div>
+  <p id="distance"></p>
+
+  <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+  
+
+
+<script>
+
+//printa a imagem das portas:
+var img_doors = '<img id="portas" width=955 height=408 src="doors.png">'
+var door_elem = $(img_doors);
+door_elem.css({position:'absolute', left:200, right:200});
+$("body").append(door_elem);
+
+
+//Função que printa a imagem dos bodes:
+var bodinho = function(l,t){
+    this.l = l
+    this.t = t
+  }
+var Draw_bodinho = function( newx){
+    var x = '<img src="bode.png">';
+    var x_element = $(x);
+      x_element.css({
+         position: " absolute",
+         left: newx.l,
+         top: newx.t
+   });
+   $("body").append(x_element);
+};
+
+
+  //Função que printa a imagem do dinheiro:
+var dinheirinho = function(l,t){
+    this.l = l
+    this.t = t
+  }
+var Draw_dinheirinho = function( newx){
+    var x = '<img src="dinheiro.png">';
+    var x_element = $(x);
+      x_element.css({
+         position: " absolute",
+         left: newx.l,
+         top: newx.t
+   });
+   $("body").append(x_element);
+  };
+
+
+//Porta com o premio:
+var count = 0
+p_dinheiro = Math.floor(Math.random()*3) //0,1 ou 2
+
+
+var count = 0
+var p_escolhida
+var aux = 0 //Troca de porta (sim ou não)
+
+
+
+
+$("body").click(function(event){ 
+	if (count ==0){
+		
+		console.log(event.offsetX)
+    console.log("oi")
+    console.log(event.offsetY)
+    if ( event.offsetX>=86 && event.offsetX<=230){
+        p_escolhida = 0
+				count++
+    }else if ( event.offsetX>=409 && event.offsetX<=554 ){
+        p_escolhida = 1
+				count++
+    }else if ( event.offsetX>=731 && event.offsetX<=875){
+        p_escolhida = 2
+				count++
+    };
+		count++
+	
+	
+		var p_aberta = Math.floor(Math.random()*3)
+		if (p_dinheiro == p_escolhida){
+			while ( p_aberta == p_escolhida){
+				p_aberta = Math.floor(Math.random()*3)}
+		}else{
+			while ( p_aberta == p_dinheiro || p_aberta == p_escolhida){
+			p_aberta = Math.floor(Math.random()*3)}
+		};
+		console.log("p_aberta: "+p_aberta)
+	
+		if (p_aberta == 0){
+			var door1 = new bodinho(286,158)
+			Draw_bodinho(door1)
+			aux = 1
+			console.log("printa o bodinho")
+		}else if(p_aberta ==1){
+			var door2 = new bodinho(609,158)
+			Draw_bodinho(door2)
+			aux = 1
+			console.log("printa o bodinho")
+		}else if (p_aberta == 2){
+			var door3 = new bodinho(931,158)
+			Draw_bodinho(door3)
+			aux = 1
+			console.log("printa o bodinho")
+		};
+	
+		if (aux == 1){
+	
+		setTimeout(function(){
+			resposta = confirm("Quer trocar de porta?");
+			aux ++;
+			console.log(aux)},1000);
+			console.log(aux);
+		
+			
+		setTimeout(function(){
+			
+			if (p_dinheiro == 0){
+				var Ddoor = new dinheirinho(286,158)
+				Draw_dinheirinho(Ddoor)
+				var door2 = new bodinho(609,158)
+				Draw_bodinho(door2)
+				var door3 = new bodinho(931,158)
+				Draw_bodinho(door3)
+			}else if (p_dinheiro == 1){
+				var Ddoor = new dinheirinho(609,158)
+				Draw_dinheirinho(Ddoor)
+				var door1 = new bodinho(286,158)
+				Draw_bodinho(door1)
+				var door3 = new bodinho(931,158)
+				Draw_bodinho(door3)
+			}else{
+				var Ddoor = new dinheirinho(931,158)
+				Draw_dinheirinho(Ddoor)
+				var door1 = new bodinho(286,158)
+				Draw_bodinho(door1)
+				var door2 = new bodinho(609,158)
+				Draw_bodinho(door2)
+			}
+			
+		},1000);			
+		console.log(p_dinheiro)
+		
+		
+		setTimeout(function(){			
+		if (resposta==false){
+			if (p_escolhida == p_dinheiro){
+				alert("Parabéns! Você ganhou o dinheiro!")
+			}else{ alert("Você ganhou um bode culto :p ")}
+		}else{
+			if (p_escolhida == p_dinheiro){
+            alert("Você ganhou um bode culto :p ")
+			}else{alert("Parabéns! Você ganhou o dinheiro!")};
+		};
+		},3500);
+	};
+		
+	};
+	
+});
+
+ 
+
+
+
+
+   
+
+</script>
+
+
+</body>
+</html>
