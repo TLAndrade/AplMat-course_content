@@ -2,11 +2,11 @@
 
 <h3>Jogo da velha</h3>
 Um clássico da infância para jogar com outro amigo nas horas tediosas.
-![](imgs/JV)
+![JV](/imgs/JV.jpg)
 
 <h3>Poema em movimento</h3>
 Um pouco de arte com HTML.
 
 <h3>Monty Hall</h3>
 O clássico programa de TV que gerou debates na comunidade de probabilidade.
-![](imgs/MH)
+![MH](/imgs/MH.jpg)
