@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+ <title>Jogo da velha</title>
+</head>
+<body>
+
+    <style>
+        div.a{
+            text-align: center;
+            position: absolute;
+        }
+		</style>
+		
+	<div class='a'>
+  <h1 id="jogo">Jogo da Velha</h1>
+  <img id="img_velha" width=263 height=213 src="jogoVelha.png">
+  </div>
+  <p id="distance"></p>
+  <script src="https://code.jquery.com/jquery-2.1.0.js"></script>
+  
+
+
+<script>
+
+
+var jogo_da_velha = function(){
+jogador_um = prompt('Nome do jogador 1:')
+alert('Olá, '+jogador_um+'! Você vai jogar com X')
+jogador_dois = prompt('Nome o jogador 2:')
+alert('Olá, '+jogador_dois+'! Você vai jogar com O')
+
+
+var count = 0; // conta os clicks
+  
+  // Posições do tabuleiro:
+  var a = 0; //primeira coluna, primeira linha
+  var b = 0; //segunda coluna, primeira linha
+  var c = 0; //terceira coluna, primeira linha
+  var d = 0; //pri col, seg linha
+  var e = 0; //seg col, seg linha
+  var f = 0; //ter col, seg linha
+  var g = 0; //pri col, ter linha
+  var h = 0; //seg col, ter linha
+  var i = 0; //ter col, ter linha
+  
+  // objeto X e função para desenhar
+  var Xs = function(l,t){
+    this.l = l
+    this.t = t
+  }
+  var DrawX = function( newx){
+    var x = '<img src="x.png">';
+    var x_element = $(x);
+      x_element.css({
+         position:"absolute",
+         left: newx.l,
+         top: newx.t
+   });
+   $("body").append(x_element);
+  };
+  
+  
+  // objeto O e função para desenhar
+  var Os = function(l,t){
+    this.l = l
+    this.t = t
+  }
+  var DrawO = function( newo){
+    var o = ' <img src="O.png">';
+    var o_element = $(o);
+      o_element.css({
+         position:"absolute",
+         left: newo.l,
+         top: newo.t
+   });
+   $("body").append(o_element);
+  };
+  
+  $("#img_velha").click(function(event){
+    
+    // posição a:
+    console.log(event.offsetX)
+    if (event.offsetX<87 && event.offsetY<71 && a ==0){
+      count++
+      if (count%2 == 0){
+        a=2
+        var lc = new Os(570-550,95);
+        DrawO(lc)
+      }else{
+        a=1
+        var lc = new Xs(570-550,95);
+        DrawX(lc)
+      }
+    };
+    
+    // posição b:
+    if (event.offsetX<=176 && event.offsetX>=87 && 
+        event.offsetY<71 &&
+        b == 0){
+      count+=1
+      if ((count/2)%1 == 0){
+        b=2
+       var lcc = new Os(657-550,95);
+        DrawO(lcc)
+      }else{
+        b=1
+        var lcc = new Xs(657-550,95);
+        DrawX(lcc)
+      }
+    }
+    
+    // posição c:
+    if (event.offsetX>176 &&  
+        event.offsetY<71 &&
+        c == 0){
+      count++
+      if ((count/2)%1 == 0){
+        c=2
+       var lccc = new Os(744-550,95);
+       DrawO(lccc)
+      }else{
+        c=1
+        var lccc = new Xs(744-550,95);
+        DrawX(lccc)
+      }
+    }
+    
+    // posição d:
+    if (event.offsetX<87 && 
+        event.offsetY>=71 && event.offsetY<142 &&
+        d == 0){
+      count++
+      if ((count/2)%1 == 0){
+        d=2
+       var llc = new Os(570-550,176);
+       DrawO(llc)
+      }else{
+        d=1
+        var llc = new Xs(570-550,176);
+        DrawX(llc)
+      }
+    }
+    
+    // posição e:
+    if (event.offsetX<=176 && event.offsetX>=87 && 
+        event.offsetY>=71 && event.offsetY<142 &&
+        e == 0){
+      count++
+      if ((count/2)%1 == 0){
+        e=2
+       var llcc = new Os(657-550,176);
+       DrawO(llcc)
+      }else{
+        e=1
+        var llcc = new Xs(657-550,176);
+        DrawX(llcc)
+      }
+    }
+    
+    // posição f:
+    if (event.offsetX>176 &&  
+        event.offsetY>=71 && event.offsetY<142 && 
+        f == 0){
+      count++
+      if ((count/2)%1 == 0){
+        f=2
+       var llccc = new Os(744-550,176);
+       DrawO(llccc)
+      }else{
+        f=1
+        var llccc = new Xs(744-550,176);
+       DrawX(llccc)
+      }
+    }
+    
+    // posição g:
+    if (event.offsetX<87 && 
+        event.offsetY >= 142 &&
+        g == 0){
+      count++
+      if ((count/2)%1 == 0){
+       g=2
+       var lllc = new Os(570-550,257);
+       DrawO(lllc) 
+      }else{
+        g=1
+       var lllc = new Xs(570-550,257);
+       DrawX(lllc) 
+      }
+    }
+    
+    // posição h:
+    if (event.offsetX<=176 && event.offsetX>=87 &&
+        event.offsetY >= 142 &&
+        h == 0){
+      count++
+      if ((count/2)%1 == 0){
+        h=2
+        var lllcc = new Os(657-550,257);
+       DrawO(lllcc) 
+      }else{
+        h=1
+        var lllcc = new Xs(657-550,257);
+        DrawX(lllcc) 
+      }
+    }
+    
+    // posição i:
+    if (event.offsetX>176 &&
+        event.offsetY >= 142 &&
+        i == 0){
+      count++
+      if ((count/2)%1 == 0){
+        i=2
+       var lllccc = new Os(744-550,257);
+       DrawO(lllccc) 
+      }else{
+        i=1
+         var lllccc = new Xs(744-550,257);
+         DrawX(lllccc) 
+      }
+    }
+    
+    if ((a==1 && b==1 && c==1) ||
+        (d==1 && e==1 && f==1) ||
+        (g==1 && h==1 && i==1) ||
+        (a==1 && d==1 && g==1) ||
+        (b==1 && e==1 && h==1) ||
+        (c==1 && f==1 && i==1) ||
+        (a==1 && e==1 && i==1) ||
+        (c==1 && e==1 && g==1)){
+          alert("Parabens, "+jogador_um+"! Você venceu!  "+jogador_dois+", tente outra vez")
+          //novo_jogo = confirm("Jogar de novo?")
+         // if (novo_jogo == true){ jogo_da_velha()};
+        
+           }else if((a==2 && b==2 && c==2) ||
+        (d==2 && e==2 && f==2) ||
+        (g==2 && h==2 && i==2) ||
+        (a==2 && d==2 && g==2) ||
+        (b==2 && e==2 && h==2) ||
+        (c==2 && f==2 && i==2) ||
+        (a==2 && e==2 && i==2) ||
+        (c==2 && e==2 && g==2)){
+          alert("Parabens, "+jogador_dois+"! Você venceu!  "+jogador_um+", tente outra vez")
+          //novo_jogo = confirm("Jogar de novo?")
+          //if (novo_jogo == true){ jogo_da_velha()};
+        }else if (count >= 9){
+      alert("Fim de jogo. Deu velha!");
+      //novo_jogo = confirm("Jogar de novo?")
+         // if (novo_jogo == true){ jogo_da_velha()};
+    }
+    
+  });
+  
+}
+
+jogo_da_velha(); 
+
+  
+</script>
+
+</body>
+</html>
