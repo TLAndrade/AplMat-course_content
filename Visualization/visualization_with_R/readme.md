@@ -5,4 +5,4 @@ Algumas visualizações usando dados do Covid:
 
 ![Covid tree](img/3-tree.png)
 
-![Covid map](img/2-animation.png)
+![Covid map](img/2-animation.gif)
