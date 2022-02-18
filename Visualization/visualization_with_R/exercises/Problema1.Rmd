@@ -1,0 +1,185 @@
+---
+title: "Teste A1"
+author: "Tarla Lemos de Andrade"
+date: "16 April 2020"
+output: html_document
+---
+
+
+#### Ex. 1
+```{r}
+library(readr)
+Problema1 <- read_csv("Problema1.csv")
+```
+
+
+1. Para importar os dados usei a biblioteca "readr" e o comando acima.
+```{r}
+#Problema1
+colnames(Problema1) <- c("Paciente", "Sexo", "Idade", "Tamanho_cis", "Loc")
+Problema1
+```
+2. Construa uma tabela e um gráfico de distribuição de freqüências para a localização do cisto no pâncreas dos pacientes;
+
+```{r}
+library(ggplot2)
+t_loc <- table(Problema1["Loc"])
+t_loc <- data.frame(t_loc)
+t_loc
+ggplot(t_loc, aes(x=Var1, y=Freq))+geom_point()+ggtitle("Freq. Localização do Cisto")
+```
+
+3. Construa uma tabela e um gráfico de distribuição de freqüências conjuntas para as variáveis sexo e localização do cisto no
+pâncreas. Com base na tabela e gráfico obtidos, você suspeita que exista relação entre o sexo e a localização do cisto?
+```{r}
+library(gridExtra)
+t_sloc <- table(Problema1$Sexo, Problema1$Loc)
+t_sloc <- data.frame(t_sloc)
+Ft_sloc <- t_sloc[t_sloc$Var1 == "F", ]
+Mt_sloc <- t_sloc[t_sloc$Var1 == "M", ]
+
+plot1 <- ggplot(Ft_sloc, aes(x=Var2, y=Freq))+geom_point()+ggtitle("Loc do cisto para sexo feminino")
+plot2 <- ggplot(Mt_sloc, aes(x=Var2, y=Freq))+geom_point()+ggtitle("Loc do cisto para sexo masculino")
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+Podemos ver que Para o sexo masculino há uma grande quantidade de cisto na cabeça, já nas mulheres a quantidade é pouca. E o contrário para o corpo. Como não seguem a mesma proporção, existe relação.
+
+4. Construa uma tabela e um gráfico de distribuição de freqüências para os tamanhos dos cistos;
+```{r}
+
+t_cis <- data.frame(table(Problema1$Tamanho_cis))
+t_cis
+
+ggplot(t_cis, aes(x=Var1,y=Freq))+geom_point()+ggtitle("Frequência: tamanho do cisto")
+```
+
+5. Produza os graficos *boxplot* dos tamanhos dos cistos segundo o sexo e dos pacientes e suas localizações no pâncreas. Interprete os
+gráficos apresentados.
+```{r}
+Problema1
+
+plot1 <- ggplot(Problema1, aes(x=Sexo,y=Tamanho_cis))+scale_y_continuous(breaks=seq(0,50,2))+geom_boxplot()+ggtitle(" Tamanho do cisto X sexo")
+plot2 <- ggplot(Problema1, aes(x=Loc,y=Tamanho_cis))+scale_y_continuous(breaks=seq(0,50,2))+geom_boxplot()+ggtitle("Tamanho do cisto X localização")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+Para a relação do tamanho do cisto e sexo podemos ver que a mediana do tamanho para o sexo femino é maior, e as variações do tamanho não são muito distintas.
+
+Já para a relação do tamanho cisto e localização, a mediana do corpo é a maior, enquanto a cabeça tem a menor mediana. Para o colo, a distribuição do tamanho do cisto parece ser simétrica em relação a mediana, enquanto para a cauda, parece ser uma distribuição assimétrica à esquerda.
+
+
+6.  Construa um gráfico que permita avaliar a relação entre a idade do paciente e o tamanho do cisto. Comente o resultado.
+```{r}
+ggplot(Problema1, aes(x=Idade, y=Tamanho_cis))+geom_point()
+```
+Podemos ver uma relação linear decrescente.
+
+
+7. Calcule as medidas de posição e dispersão estudadas para os tamanhos dos cistos. Depois, calcule-as novamente, para cada sexo.
+Você suspeita que exista relação entre o tamanho dos cistos e o sexo dos pacientes?
+
+Para o tamanho do cisto:
+```{r}
+Problema1
+tamanho <- Problema1$Tamanho_cis
+#table(tamanho)
+print("")
+sprintf("Moda: 4")
+m <- mean(tamanho)
+sprintf("Média: %s", m)
+sprintf("Mediana: %s", quantile(tamanho)["50%"])
+
+desv_med <- 0
+for(i in 1:length(tamanho)){desv_med <- abs(tamanho[i]-m)}
+desv_med <- desv_med*1/length(tamanho)
+sprintf("Desvio médio: %s", desv_med)
+sprintf("Variância: %s", var(tamanho))
+sprintf("Desvio padrão: %s", sd(tamanho))
+```
+
+Para o sexo feminino:
+```{r}
+tamanho <- Problema1[Problema1$Sexo == "F",]$Tamanho_cis
+print("")
+sprintf("Moda: 4")
+m <- mean(tamanho)
+sprintf("Média: %s", m)
+sprintf("Mediana: %s", quantile(tamanho)["50%"])
+
+desv_med <- 0
+for(i in 1:length(tamanho)){desv_med <- abs(tamanho[i]-m)}
+desv_med <- desv_med*1/length(tamanho)
+sprintf("Desvio médio: %s", desv_med)
+sprintf("Variância: %s", var(tamanho))
+sprintf("Desvio padrão: %s", sd(tamanho))
+```
+
+Para o sexo masculino:
+```{r}
+tamanho <- Problema1[Problema1$Sexo == "M",]$Tamanho_cis
+print("")
+sprintf("Moda: 4")
+m <- mean(tamanho)
+sprintf("Média: %s", m)
+sprintf("Mediana: %s", quantile(tamanho)["50%"])
+
+desv_med <- 0
+for(i in 1:length(tamanho)){desv_med <- abs(tamanho[i]-m)}
+desv_med <- desv_med*1/length(tamanho)
+sprintf("Desvio médio: %s", desv_med)
+sprintf("Variância: %s", var(tamanho))
+sprintf("Desvio padrão: %s", sd(tamanho))
+```
+
+Podemos ver que apesar de os desvios padrão para os dois sexos serem próximos, as medianas e médias são bem distintas para cada sexo, ou seja, elas apresentam uma distribuição distinta. Desta maneira, diria que estas variáveis estão relacionadas. 
+
+
+#### Ex. 2
+
+Transcrevendo a mão a tabela:
+```{r}
+oc <- matrix(c(13,24,0,11,33,81,2,1,1,0,5,9,113,176,49,61,286,685,4,2,1,0,6,13,5,5,1,1,10,22,137,208,52,73,340,810), ncol=6, nrow=6)
+colnames(oc) <- c("Mercado_Trabalho", "Prestígio", "Aptidão_Pessoal", "Baixa conc. por vagas", "Perspect. salariais", "Total")
+rownames(oc) <- c("Biomédica", "Exatas/Tecnologia", "Arquit./Artes Gráf", "Geo-econômica", "Outras", "Total")
+oc
+```
+
+(a) Tabela com o percentuais em relação ao total:
+```{r}
+tp_oc <- oc
+totalf <- sum(tp_oc[,6])
+for(i in 1:6){
+  for(j in 1:6){
+    tp_oc[i,j] <- (tp_oc[i,j]/totalf)
+  }
+}
+tp_oc
+```
+Escolhi uma tabela de percentual para cada linha:
+```{r}
+p_oc <- oc
+
+for(i in 1:6){
+  for(j in 1:6){
+    p_oc[i,j] <- (p_oc[i,j]/p_oc[i,6])
+  }
+}
+p_oc
+```
+
+(b)Podemos ver que há uma grande influência da aptidão pessoal para a escolha das carreiras, e baixa influência da concorrência por vaga para todas as escolhas de curso. E, que elas seguem as proporções totais para cada motivo.
+Para verificar esta intuição, calculemos o qui-quadrado e o coeficiente de Tschuprov:
+
+```{r}
+qui_quad <- 0
+for(i in 1:5){
+  for(j in 1:5){
+    qui_quad <- qui_quad + (oc[i,j]-(oc[i,6]*p_oc[6,j]))**2/(oc[i,6]*p_oc[6,j])
+  }
+}
+sprintf("Qui-quadrado: %s",qui_quad)
+sprintf("Coeficiente Tschuprov: %s", sqrt((qui_quad/(nrow(oc)*ncol(oc)))/((nrow(oc)-1)*(ncol(oc)-1))))
+```
+Podemos ver um baixo valor de coeficiente de Tschuprov.

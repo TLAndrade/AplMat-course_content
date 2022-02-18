@@ -1,0 +1,591 @@
+---
+title: "Exercícios da Lista 3"
+author: 'Aluno: Tarla Lemos de Andrade'
+date: "8 Abril 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r}
+library(ggplot2)
+library(gridExtra)
+```
+
+
+
+
+### Capítulo 2
+
+## Ex. 9
+A MB Indústria e Comércio, desejando melhorar o nível de seus funcionários em cargos
+de chefia, montou um curso experimental e indicou 25 funcionários para a primeira
+turma. Os dados referentes à seção a que pertencem, notas e graus obtidos no curso
+estão na tabela a seguir. Como havia dúvidas quanto à adoção de um único critério de
+avaliação, cada instrutor adotou seu próprio sistema de aferição. Usando dados daquela
+tabela, responda às questões:
+
+
+(a) Após observar atentamente cada variável, e com o intuito de resumi-las, como você
+identificaria (qualitativa ordinal ou nominal e quantitativa discreta ou contínua) cada
+uma das 9 variáveis listadas?
+
+Resposta:
+    seção: qualitativa nominal;
+    Administração: quantitativa discreta;
+    Direito: quantitativa discreta;
+    Redação: quantitativa contínua;
+    Estatística: quantitativa discreta;
+    Inglês: qualitativa ordinal;
+    Metodologia: qualitativa ordinal;
+    Política: quantitativa contínua;
+    Economia: quantitativa contínua.
+    
+    
+(b) Compare e indique as diferenças existentes entre as distribuições das variáveis Direito,
+Política e Estatística.
+
+Resposta: A distribuição de direito está concentrada em apenas uma nota (9), enquanto as outras estão mais distribuidas. A distribuição das notas de política requerem intervalos de bin, uma vez que é uma variável contínua, diferente de estatística.
+```{r, echo=FALSE}
+redacao <- c(8.6,7,8,8.6,8,8.5,8.2,7.5,9.4,7.9,8.6,8.3,7,8.6,8.6,9.5,6.3,7.6,6.8,7.5,7.7,8.7,7.3,8.5,7)
+est <- c(9,9,8,8,9,10,8,8,9,8,10,7,7,9,9,7,8,9,4,7,7,8,10,9,9)
+pol <- c(9,6.5,9,6,6.5,6.5,9,6,10,9,10,6.5,6,10,10,9,10,6,6,6,6.5,6,9,6.5,9)
+direito <- c(9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9)
+metodologia <- c("A", "C", "B", "C", "A", "A", "C", "C", "B", "C", "B", "B", "C", "B", "B", "A", "C", "C", "C", "B", "B", "A", "C", "A", "A")
+sec <- c("P","P","P","P","P","P","P","T","T","T","T","T","T","T","V","V","V","V","V","V","V","V","V","V", "V")
+```
+```{r}
+df_d <- data.frame(direito)
+plot_d <- ggplot(df_d, aes(x=direito) ) + geom_histogram(binwidth  = 1) + ggtitle("Direito") + scale_x_continuous(breaks = seq(1, 10, 1))
+
+df_p <- data.frame(pol)
+plot_p <- ggplot(df_p, aes(x=pol) ) + geom_histogram(binwidth  = 1) + ggtitle("Política")+scale_x_continuous(breaks = seq(1, 10, 1))
+
+df_e <- data.frame(est)
+plot_e <- ggplot(df_e, aes(x=est) ) + geom_histogram(binwidth  = 1) + ggtitle("Estatística")+scale_x_continuous(breaks = seq(1, 10, 1))
+
+grid.arrange(plot_d,plot_p,plot_e, ncol=3)
+```
+
+(c) Construa o histograma para as notas da variável Redação.
+
+Resposta:
+```{r}
+df_red <- data.frame(redacao)
+ggplot(df_red, aes(x=redacao))+geom_histogram(binwidth=1)+ scale_x_continuous(breaks = seq(1, 10, 1)) + scale_y_continuous(breaks = seq(1,20, 1)) + ggtitle("Histograma das notas de redação")
+```
+(d) Construa a distribuição de freqüências da variável Metodologia e faça um gráfico
+para indicar essa distribuição.
+
+Resposta:
+```{r}
+m <- factor(metodologia)
+t_m <- table(m)
+t_m
+ggplot(data.frame(metodologia), aes(metodologia))+geom_bar()
+```
+
+(e) Sorteado ao acaso um dos 25 funcionários, qual a probabilidade de que ele tenha
+obtido grau A em Metodologia?
+
+Resposta: A probabilidade é:
+```{r}
+t_m["A"]/sum(t_m)
+```
+
+(f) Se, em vez de um, sorteássemos dois, a probabilidade de que ambos tivessem tido A
+em Metodologia é maior ou menor do que a resposta dada em (e)?
+
+Resposta: A probabilidade de sortear duas pessoas com conceito A é:
+```{r}
+(t_m["A"]/sum(t_m))*((t_m["A"]-1)/(sum(t_m)-1))
+```
+
+(g) Como é o aproveitamento dos funcionários na disciplina Estatística, segundo a seção
+a que eles pertencem?
+
+```{r}
+df <- data.frame( sec = sec,
+                  statistic = est)
+aggregate(est ~ sec, df, mean)
+```
+
+
+
+### Capítulo 3, Edição 2017: Ex 28 a 33 
+
+## Ex. 28
+
+Para se estudar o desempenho de duas corretoras de ações, selecionou-se de cada uma delas, amostras aleatórias das ações negociadas. Para cada ação selecionada, computou-se a porcentagem de lucro apresentada durante um período fixado de tempo. Os dados estão a seguir:
+
+
+```{r}
+
+corretora.A <- data.frame(periodo_1 = c(45, 62, 38, 55, 54, 65), periodo_2 = c(60, 55, 48, 56, 59, 55), periodo_3 = c(54, 70, 64, 55, 48, 60))
+
+corretora.A
+
+```
+
+```{r}
+
+corretora.B <- data.frame(periodo_1 = c(57, 50, 59, 61, 57, 55, 59), periodo_2 = c(55, 52, 55, 52, 57, 58, 51), periodo_3 = c(58, 59, 56, 53, 50, 54, 56))
+
+corretora.B
+
+```
+
+Que tipo de informação revelam esses dados? (Sugestão: Observar os quantis empíricos)
+
+Observando o boxplot dos dados podemos ver que a Corretora B apresenta uma mediana ligeiramente maior que a corretora A (55<56),porém o terceiro quartil é maior na corretora A (60>58), enquanto o primeiro quartil são quase iguais.
+Diria que o desempenho da corretora B se sobressai porque conseguiu uma mediana maior, e probabilidade de obter um lucro maior que 55% ( que é a mediana de A), é maior na corretora B.
+
+
+```{r}
+#reorganizando os dados:
+A <- data.frame(lucro = c(corretora.A$periodo_1,corretora.A$periodo_2,corretora.A$periodo_3))
+B <- data.frame(lucro = c(corretora.B$periodo_1,corretora.B$periodo_2,corretora.B$periodo_3))
+
+plot_A <- ggplot(A, aes(y=lucro))+geom_boxplot()+scale_y_continuous(breaks = seq(0, 100, 5))+ggtitle("Corretora A")
+plot_B <- ggplot(B, aes(y=lucro))+geom_boxplot()+scale_y_continuous(breaks = seq(0, 100, 1))+ggtitle("Corretora B")
+
+grid.arrange(plot_A, plot_B, ncol=2)
+
+
+```
+
+## Ex. 29
+
+Para verificar a homogeneidade das duas populações do problema anterior, um estatístico sugeriu que se usasse o quociente 
+$$F = \frac{var(X/A)}{var(X/B)} $$
+sendo $var(X/A)$ a variância de X para a corretora A; $X =$ porcentagem de lucro.
+No entanto, o profissional não disse qual decisão tomar baseado nesse valor. Que regra de decisão voce adotaria para dizer se são homogêneas ou não?
+
+O coeficiente $F$ nos dá uma homogeneidade relativa. Se $F>1$ significa que a variância de lucros da corretora A é maior que a de B, e portanto, os lucros de B é mais homogêneo que os de A. Se $F<1$, os lucros de A são mais homogêneos. E por fim, se $F=1$, ambos apresentam mesma homogeneidade (não sabemos se baixa ou alta). 
+
+
+## Ex. 30
+
+Faça um gráfico *boxplot* para cada uma das corretoras e compare os dois conjuntos de dados a partir dos gráficos.
+
+
+```{r}
+#organizando dados: col=(corretora,lucro)
+a <- c("A")
+b <- c("B")
+for(i in 2:(ncol(corretora.A)*nrow(corretora.A))){a <- c(a,"A")}
+for(i in 2:(ncol(corretora.B)*nrow(corretora.B))){a <- c(a,"B")}
+
+lucro = c(corretora.A$periodo_1,corretora.A$periodo_2,corretora.A$periodo_3,corretora.B$periodo_1,corretora.B$periodo_2,corretora.B$periodo_3)
+
+df <- data.frame(corretoras = c(a,b),
+                 lucro = lucro)
+
+ggplot(df, aes(x=corretoras,y=lucro))+scale_y_continuous(breaks=seq(0,100,5))+geom_boxplot()+ggtitle("Boxplot do Lucro das Corretoras")
+
+
+       
+```
+
+## Ex. 31
+
+Para decidir se o desempenho das duas corretoras são semelhantes ou não, adotou-se o seguinte teste:
+
+$$t = \frac{\bar{x_A} - \bar{x_B}}{S*\sqrt{1/{n_A} - 1/{n_B}}} $$
+$$ S^2 = \frac{(n_A -1)var(X/A) + (n_B -1)var(X/B)}{n_A + n_B - 2} $$
+Sendo $n_A$ e $n_B$ o número de ações selecionadas das corretoras $A$ e $B$ respectivamente.
+
+Caso $|t| < 2$, os desempenhos são semelhantes, caso contrário, são diferentes. Qual seria a sua conclusão?
+
+Calculemos $t$:
+```{r}
+nA <- ncol(corretora.A)*nrow(corretora.A)
+nB <- ncol(corretora.B)*nrow(corretora.B)
+S_two <- ((nA-1)*var(A$lucro)+(nB-1)*var(B$lucro))/(nA+nB-2)
+t <- (mean(A$lucro)-mean(B$lucro))/(sqrt(S_two)*sqrt(1/nA - 1/nB))
+t
+```
+Para este teste os desempenhos são semelhantes, uma vez que $0.578 < 2$ .
+
+## Ex.32
+
+Um órgão do governo do estado está interessado em determinar padrões sobre o investimento
+em educação, por habitante, realizado pelas prefeituras. De um levantamento de
+dez cidades, foram obtidos os valores (codificados) da tabela abaixo.
+
+Nesse caso, será considerado como investimento básico a média final das observações, calculada
+da seguinte maneira:
+
+1. Obtém-se uma média inicial.
+2. Eliminam-se do conjunto aquelas observações que forem superiores à média inicial
+mais duas vezes o desvio padrão, ou inferiores à média inicial menos duas vezes o
+desvio padrão.
+3. Calcula-se a média final com o novo conjunto de observações.
+
+Qual o investimento básico que você daria como resposta?
+Observação: O procedimento do item 2 tem a finalidade de eliminar do conjunto a cidade
+cujo investimento é muito diferente dos demais.
+
+Resposta:
+```{r}
+investimento <- c(20,16,14,8,19,15,14,16,19,18)
+med <- mean(investimento)
+dp <- sd(investimento)
+i <- investimento < (med + 2*dp)
+mean(investimento[i])
+```
+O investimento básico seria $15.9$, a mesma média inicial uma vez que não há desvios padão grandes.
+
+## Ex.37
+No Problema 9, do Capítulo 2, temos os resultados de 25 funcionários em vários exames
+a que se submeteram. Sabe-se agora que os critérios adotados em cada exame não são
+comparáveis, por isso decidiu-se usar o desempenho relativo em cada exame. Essa medida
+será obtida do seguinte modo:
+(I) Para cada exame serão calculados a média⎯x e o desvio padrão dp(X).
+(II) A nota X de cada aluno será padronizada do seguinte modo:
+$$Z=\frac{X-\bar{x}}{dp(X)}$$
+
+(a) Interprete o significado de Z.
+
+ As notas estão sendo centradas em zero e colocadas  na mesma escala.
+ 
+ (b) Calcule as notas padronizadas dos funcionários para o exame de Estatística.
+ 
+ ```{r}
+Z_est <- (est - mean(est))/sd(est)
+Z_est
+```
+(c) Com os resultados obtidos em (b), calcule⎯z e dp(Z).
+
+```{r}
+m_zest <- mean(Z_est)
+dp_zest <- sd(Z_est)
+```
+(d) Se alguma das notas padronizadas estiver acima de 2dp(Z) ou abaixo de –2dp(Z),
+esse funcionário deve ser considerado um caso atípico. Existe algum nessa situação?
+
+Existe 1 aluno nesta situação.
+```{r}
+sum(Z_est > 2*dp_zest)
+sum(Z_est < -2*dp_zest)
+```
+(e) O funcionário 1 obteve 9,0 em Direito, em Estatística e em Política. Em que disciplina
+o seu desempenho relativo foi melhor?
+
+Calculemos o desempenho relativo:
+```{r}
+Z_e <- (est[1]-mean(est))/sd(est)
+Z_p <- (pol[1]-mean(pol))/sd(pol)
+
+Z_e
+Z_p
+```
+O desempenho relativo do aluno em política foi maior que em estatística. Já o desempenho relativo em política é total, uma vez que tirou uma nota igual a todos os outros alunos, mas analiticamente, z não está definido uma vez que o desvio padrão é zero. 
+
+### Capítulo 4, Edição 2010: Ex 19, 20, 22, 29 e 30
+
+## Ex. 19
+
+Uma amostra de 200 habitantes de uma cidade foi escolhida para declarar sua opinião
+sobre um certo projeto governamental. O resultado foi o seguinte:
+
+```{r}
+data.ex19 <- matrix(c(30,60,90,35,25,60,35,15,50,100,100,200),nrow = 3, ncol = 4)
+colnames(data.ex19) <- c("Urbano","Suburbano","Rural","Total")
+rownames(data.ex19) <- c("A favor","Contra","Total")
+data.ex19
+```
+
+
+(a) Calcule as proporções em relação ao total das colunas.
+
+```{r}
+pcol <- data.ex19
+for(i in 1:4){pcol[1:3,i] <- pcol[1:3,i]/pcol[3,i]}
+pcol
+```
+
+(b) Você diria que a opinião independe do local de residência?
+
+Diria que a poinião depende do local  de residência, uma vez que a proporção total de opinião (a favor-50%, contra-50%), não se mantem para as regiões.
+
+(c) Encontre uma medida de dependência entre as variações.
+
+Encontremos o qui-quadrado de Pearson:
+```{r}
+qui_quad <- 0
+for(i in 1:2){
+  for(j in 1:3){
+    qui_quad <- qui_quad + (pcol[i,j]-(pcol[i,4]*data.ex19[i,j]))**2/(pcol[i,4]*data.ex19[i,j])
+  }
+}
+qui_quad
+
+```
+É um valor muito distante de zero, o que indica dependência.
+
+## Ex. 20
+
+Com base na tabela abaixo, você concluiria que o tipo de atividade está relacionado ao fato de as embarcações serem de propriedade estatal ou particular? Encontre uma medida de dependência entre as variáveis.
+
+```{r}
+data.ex20 <- matrix(c(5,92,141,231,51,48),nrow = 2, ncol = 3)
+colnames(data.ex20) <- c("Costeira","Fluvial","Internacional")
+rownames(data.ex20) <- c("Estatal","Particular")
+data.ex20
+```
+
+
+```{r}
+pcol <- data.ex20
+cTotal <- c(sum(pcol[1,]),sum(pcol[2,]))
+pcol <- cbind(pcol, cTotal)
+
+lTotal <- c(sum(pcol[,1]),sum(pcol[,2]), sum(pcol[,3]), sum(pcol[,4]))
+pcol <- rbind(pcol, lTotal)
+
+for(i in 1:4){pcol[1:3,i] <- pcol[1:3,i]/pcol[3,i]}
+pcol
+```
+Diria que as atividades estão relacionadas a ser estatal ou particular, uma vez que a proporção total não é vista nas atividades individuais.
+Calculemos o qui-quadrado:
+```{r}
+chisq.test(data.ex20)
+```
+
+## Ex. 22
+
+Uma pesquisa para verificar a tendência dos alunos a prosseguir os estudos, segundo a classe social do respondente, mostrou o seguinte quadro:
+
+```{r}
+data.ex22 <- matrix(c(200,200,220,280,380,720),nrow=2,ncol=3)
+colnames(data.ex22) <- c("Alta","Média","Baixa")
+rownames(data.ex22) <- c("Sim","Não")
+data.ex22
+```
+
+
+(a) Você diria que a distribuição de respostas afirmativas é igual à de respostas
+negativas?
+
+Não, pois há mais pessoas com resposta negativa do positiva para as classes média e baixa.
+
+
+
+(b) Existe dependência entre os dois fatores? Dê uma medida quantificadora da dependência.
+
+```{r}
+ptendencia <- data.ex22
+
+cTotal_perc <- c(sum(data.ex22[1,]), sum(data.ex22[2,]))/sum(data.ex22[,])
+rTotal <- c(sum(ptendencia[,1]), sum(ptendencia[,2]),sum(ptendencia[,3]))
+
+qui_quadrado <- 0
+for(i in 1:2){
+  for(j in 1:3){
+    qui_quadrado <- qui_quadrado + (data.ex22[i,j]-(rTotal[i]*data.ex22[i,j]))**2/(rTotal[i]*data.ex22[i,j])
+  }
+}
+
+qui_quadrado
+```
+Podemos ver que o qui-quadrado de Pearson é muito distante de zero. Logo, existe dependência.
+
+(c) Se dos 400 alunos da classe alta 160 escolhessem continuar e 240 não, você mudaria sua conclusão? Justifique.
+
+Não mudaria, pois as proporções ainda seriam diferenta das totais:
+```{r}
+d2 <- data.ex22
+d2[1,1] <- 160
+d2[2,1] <- 240
+
+cTotal <- c(sum(data.ex22[1,]), sum(data.ex22[2,]))
+d2 <- cbind(d2,cTotal)
+d <- d2
+
+for(i in 1:2){
+  for(j in 1:4){
+    d2[i,j] <- d2[i,j]/sum(d[,j])
+  }
+}
+d2
+```
+
+
+## Ex. 29
+
+Uma amostra de dez casais e seus respectivos salários anuais (em s.m.) foi colhida num
+certo bairro conforme vemos na tabela abaixo.
+
+```{r}
+data.ex29 <- data.frame("Homem" = c(10, 10, 10, 15, 15, 15, 15, 20, 20, 20), "Mulher" = c(5, 10, 10, 5, 10, 10, 15, 10, 10, 15))
+data.ex29
+```
+
+(a) Encontre o salário anual médio dos homens e o seu desvio padrão.
+
+```{r}
+m_H <- mean(data.ex29$Homem)
+dp_H <- sd(data.ex29$Homem)
+sprintf("média: %s", m_H)
+sprintf("desvio padrão: %s",m_H)
+```
+
+(b) Encontre o salário anual médio das mulheres e o seu desvio padrão.
+
+```{r}
+m_M <- mean(data.ex29$Mulher)
+dp_M <- sd(data.ex29$Mulher)
+sprintf("média: %s", m_M)
+sprintf("desvio padrão: %s",dp_M)
+
+```
+
+(c) Construa o diagrama de dispersão.
+
+```{r}
+ggplot(data.ex29, aes(x=Homem, y=Mulher))+geom_point()
+```
+
+(d) Encontre a correlação entre o salário anual dos homens e o das mulheres.
+
+```{r}
+corr <- 0
+n <- nrow(data.ex29)
+for(i in 1:n){
+  corr <- corr + ((data.ex29$Mulher[i]-m_M)/dp_M)*((data.ex29$Homem[i]-m_H)/dp_H)*1/n
+}
+corr
+```
+
+(e) Qual o salário médio familiar? E a variância do salário familiar?
+
+```{r}
+sprintf("Salário médio familiar: %s",mean(data.ex29$Homem+data.ex29$Mulher))
+sprintf("variância: %s", sd(data.ex29$Homem+data.ex29$Mulher))
+        
+
+```
+
+(f) Se o homem é descontado em $8$% e a mulher em $6$%, qual o salário líquido anual médio familiar? E a variância?
+
+```{r}
+sprintf("Salário líquido médio familiar: %s",mean(data.ex29$Homem*0.92+data.ex29$Mulher*0.94))
+sprintf("variância: %s", sd(data.ex29$Homem*0.92+data.ex29$Mulher*0.94 ))
+```
+
+## Ex. 30
+O departamento de vendas de certa companhia foi formado há um ano com a admissão de 15 vendedores.
+Nessa época, foram observados para cada um dos vendedores os valores de três variáveis:
+
+T: resultado em um teste apropriado para vendedores;
+E: anos de experiência de vendas;
+G: conceito do gerente de venda, quanto ao currículo do candidato.
+
+O diretor da companhia resolveu agora ampliar o quadro de vendedores e pede sua
+colaboração para responder a algumas perguntas. Para isso, ele lhe dá informações
+adicionais sobre duas variáveis:
+V: volume médio mensal de vendas em s.m.;
+Z: zona da capital para a qual o vendedor foi designado.
+O quadro de resultados é o seguinte:
+
+```{r}
+data.ex30 <- data.frame("Vendedor" = 1:15,
+                        "T" = c(8,9,7,8,6,8,5,5,6,7,4,7,3,5,3),
+                        "E" = c(5,2,2,1,4,4,3,3,1,3,4,2,3,1,2),
+                        "G" = c("Bom","Bom","Mau","Mau","Bom","Bom","Bom","Bom","Mau","Mau","Bom","Mau","Mau","Mau","Bom"),
+                        "V" = c(54,50,48,32,30,30,29,27,24,24,24,23,21,21,16),
+                        "Z" = c("Norte","Sul","Sul","Oeste","Sul","Oeste","Norte","Norte","Oeste","Oeste","Sul","Norte","Sul","Oeste","Norte"))
+data.ex30
+```
+
+Mais especificamente, o diretor lhe pede que responda aos sete itens seguintes:
+
+(a) Faça o histograma da variável V em classes de 10, tendo por limite inferior da primeira classe o valor 15.
+
+```{r}
+ggplot(data.ex30, aes(x=V))+geom_histogram(binwidth=10)
+```
+
+
+(b) Encontre a média e a variância da variável V. Suponha que um vendedor seja considerado excepcional se seu volume de vendas é dois desvios padrões superior à média geral. Quantos vendedores excepcionais existem na amostra?
+
+```{r}
+m <- mean(data.ex30$V)
+dp <- sd(data.ex30$V)
+sprintf("Média de V: %s",m)
+sprintf("Desvio padrão de V: %s",dp)
+sprintf("Qtd. vendedores excepcionais: %s",sum(data.ex30$V > 2*dp+m))
+
+```
+
+(c) O diretor de vendas anunciou que transferirá para outra praça todos os vendedores cujo volume de vendas for inferior ao 1o quartil da distribuição. Qual o volume mínimo de vendas que um vendedor deve realizar para não ser transferido?
+
+```{r}
+summary(data.ex30$V)["1st Qu."]
+```
+
+
+(d) Os vendedores argumentam com o diretor que esse critério não é justo, pois há zonas de venda privilegiadas. A quem você daria razão?
+
+```{r}
+ggplot(data.ex30, aes(x=Z, y=V))+geom_point()
+```
+Podemos ver pelo gráfico que a maioria dos pontos de todas as classes se concentram em uma mesma faixa de vendas, então não diria que há zona privilegiada. De qualquer maneira, os pontos de menor venda estão distribuidos entre as zonas, e assim seriam transferidos vendedores de todas as zonas.
+
+(e) Qual das três variáveis observadas na admissão do pessoal é mais importante para julgar um futuro candidato ao emprego?
+Resultado do teste
+
+
+(f) Qual o grau de associabilidade entre o conceito do gerente e a zona a que o vendedor foi designado? Você tem explicação para esse resultado?
+
+```{r}
+cg <- data.ex30$G
+z <- data.ex30$Z
+t <- table(cg,z)
+total_col_p <- c(0.53333, 0.46666)
+total_row <-  c(5,5,5)
+
+qui_quad <- 0
+for(i in 1:2){
+  for(j in 1:3){
+    qui_quad <- qui_quad + (t[i,j]-total_col_p[i]*total_row[j])**2/(total_col_p[i]*total_row[j])
+  }
+}
+
+qui_quad
+coef_T <- sqrt(qui_quad/(nrow(t)+ncol(t))/((nrow(t)-1)*(ncol(t)-1)))
+sprintf("Coeficiente de Tschuprov : %s",coef_T)
+t
+
+```
+O coeficiente apresenta um valor alto, indicando dependência. 57% dos que tiveram conceito "mau" foram para a Zona Oeste.
+
+(g) Qual o grau de associação entre o conceito do gerente e o resultado do teste? E entre zona e vendas?
+Conceito do gerente e resultado do teste:
+```{r}
+#gerente e teste: qualitativo e quantitativo
+cg <- data.ex30$G
+test <- data.ex30$T
+matriz <- matrix(c(cg, test), nrow=15,ncol=2)
+bom <- matriz[matriz[,1]==1,]
+ruim <- matriz[matriz[,1]==2,]
+
+var_media <- sum(var(bom)*nrow(bom), var(ruim)*ncol(ruim))/nrow(data.ex30)
+R_quad <- (var(matriz[,2])-var_media)/var(matriz[,2])
+sprintf("R² = %s",R_quad)
+```
+Entre Zonas e vendas:
+```{r}
+
+sul <- data.ex30$V[data.ex30$Z=="Sul"]
+oeste <- data.ex30$V[data.ex30$Z=="Oeste"]
+norte <- data.ex30$V[data.ex30$Z=="Norte"]
+
+var_quad_zv <- sum(var(sul)*length(sul),var(oeste)*length(oeste),var(norte)*length(norte))/nrow(data.ex30)
+
+R_quad_vz <- (var(data.ex30$V)-var_quad_zv)/var(data.ex30$V)
+sprintf("R² = %s", R_quad_vz)
+
+```
+Ambos os R² são próximos de zero, o que indica que a variação das vendas é pouco explicada pela zona de vendas.

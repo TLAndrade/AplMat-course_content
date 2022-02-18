@@ -1,0 +1,73 @@
+---
+title: "Exercício 9"
+author: "Tarla Lemos"
+output: html_document
+---
+
+
+A Companhia A de dedetização afirma que o processo por ela utilizado garante um efeito
+mais prolongado do que aquele obtido por seus concorrentes mais diretos. Uma amostra
+de vários ambientes dedetizados foi colhida e anotou-se a duração do efeito de dedetização.
+Os resultados estão na tabela abaixo. Você acha que existe alguma evidência a favor ou
+contra a afirmação feita pela Companhia A?
+
+```{r}
+#reproduzindo a tabela:
+row <- c("A", "B", "C")
+m_4m <- c(64,104,27)
+m4to8 <- c(120,175,48)
+m8 <- c(16,21,5)
+
+#total de observações para cada companhia:
+total <- c()
+for(i in 1:3){
+  total <- c(total, sum(m_4m[i],m4to8[i],m8[i]))
+}
+
+#tabela:
+df <- data.frame(menos_de_4_mese= m_4m,
+                 de_4_a_8_meses = m4to8,
+                 mais_de_8_meses = m8,
+                 totalc = total)
+row.names(df) <- row
+df
+```
+É justo analizar a razão da duração para cada companhia:
+```{r}
+df2 <- df
+for(i in 1:3){ df2$menos_de_4_mese[i] <- df2$menos_de_4_mese[i]/df2$total[i]}
+for(i in 1:3){ df2$de_4_a_8_meses[i] <- df2$de_4_a_8_meses[i]/df2$total[i]}
+for(i in 1:3){ df2$mais_de_8_meses[i] <- df2$mais_de_8_meses[i]/df2$total[i]}
+df
+```
+
+Valor esperado:
+```{r}
+df_esperado <- df
+v_esp <- df$total/sum(df$total)
+for(i in 1:3){df_esperado$menos_de_4_mese[i] <- sum(df$menos_de_4_mese)*v_esp[i]}
+for(i in 1:3){df_esperado$de_4_a_8_meses[i] <- sum(df$de_4_a_8_meses)*v_esp[i]}
+for(i in 1:3){df_esperado$mais_de_8_meses[i] <- sum(df$mais_de_8_meses)*v_esp[i]}
+df_esperado
+```
+
+Calculemos o desvio relativo:
+```{r}
+df_desvio <- df
+for(i in 1:3){df_desvio$menos_de_4_mese[i] <- (df_desvio$menos_de_4_mese[i]-df_esperado$menos_de_4_mese[i])**2/df_esperado$menos_de_4_mese[i] }
+for(i in 1:3){df_desvio$de_4_a_8_meses[i] <- (df_desvio$de_4_a_8_meses[i]-df_esperado$de_4_a_8_meses[i])**2/df_esperado$de_4_a_8_meses[i] }
+for(i in 1:3){df_desvio$mais_de_8_meses[i] <- (df_desvio$mais_de_8_meses[i]-df_esperado$mais_de_8_meses[i])**2/df_esperado$mais_de_8_meses[i] }
+df_desvio
+```
+
+Calculemos o $X ^2$:
+```{r}
+soma <- 0
+for(i in 1:3){soma <- soma + sum((df$menos_de_4_mese[i]-df_esperado$menos_de_4_mese[i])**2/df_esperado$menos_de_4_mese[i])}
+for(i in 1:3){soma <- soma + sum((df$de_4_a_8_meses[i]-df_esperado$de_4_a_8_meses[i])**2/df_esperado$de_4_a_8_meses[i])}
+for(i in 1:3){soma <- soma + sum((df$mais_de_8_meses[i]-df_esperado$mais_de_8_meses[i])**2/df_esperado$mais_de_8_meses[i])}
+soma
+
+```
+
+Uma vez que o qui-quadrado tem uma valor grande, as variáveis são dependentes.

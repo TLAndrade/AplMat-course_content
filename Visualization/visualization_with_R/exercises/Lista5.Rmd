@@ -1,0 +1,343 @@
+---
+title: 'Lista 4: Visualização'
+author: "Tarla Lemos de Andrade"
+date: "05/05/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(grid)
+#Importando pacotes
+knitr::opts_chunk$set(echo = TRUE)
+library(devtools)
+library(httr)
+library(Rcpp)
+#set_config( config( ssl_verifypeer = 0L ) )
+#devtools::install_github("thomasp85/gganimate", force = TRUE)
+library(tidyverse)
+# install.packages("readxl") 
+#library(rJava)
+library(xlsx)
+#library(readxl)
+library(lubridate)
+library(ggmap)
+library(ggrepel)
+library(gridExtra)
+library(pander)
+library(reshape)
+library(gapminder)
+library(gganimate)
+library(gifski)
+library(png)
+library(plotly)
+library(reshape)
+library(dplyr)
+library(ggplot2)
+
+#Para usar family = "Open Sans Condensed Bold"
+#install.packages("extrafont")
+#library(extrafont)
+#font_import()
+```
+
+# Problema 1: The Economist
+
+Crie o último gráfico do link https://tutorials.iq.harvard.edu/R/Rgraphics/Rgraphics.html. Este é um gráfico que apresenta uma relação entre o IDH x IPC entre diversos países.
+
+**Resposta:**
+
+Modificações:
+
+ * Redução do tamanho dos pontos e mudança da paleta (foi usado a paleta 'Dark2');
+
+ * Uso da transparência para destacar países de interesse.
+
+```{r, eval = FALSE}
+dat <- read_csv("dataSets/EconomistData.csv")
+mR2 <- summary(lm(HDI ~ CPI + log(CPI), data = dat))$r.squared
+mR2 <- paste0(format(mR2, digits = 2), "%")
+p <- ggplot(dat,
+            mapping = aes(x = CPI, y = HDI)) +
+  geom_smooth(mapping = aes(linetype = "r2"),
+              method = "lm",
+              formula = y ~ x + log(x), se = FALSE,
+              color = "red") +
+  geom_point(mapping = aes(color = Region),
+             size = 2,
+             stroke = 1.5,
+             alpha=0.2) +
+  geom_point(mapping = aes(color = Region),
+             data = dat[dat$Country %in% c("Russia",
+                                           "Venezuela",
+                                           "Argentinia",
+                                           "Italy",
+                                           "Brazil",
+                                           "China",
+                                           "South Africa", 
+                                           "France", 
+                                           "US",
+                                           "Germany",
+                                           "Britain",
+                                           "Japan",
+                                           "Norway"),],
+             size = 2, 
+             stroke = 1.5) +
+  geom_text_repel(mapping = aes(label = Country, alpha = labels),
+                  color = "gray20",
+                  data = transform(dat,
+                                   labels = Country %in% c("Russia",
+                                                           "Venezuela",
+                                                           "Argentinia",
+                                                           "Italy",
+                                                           "Brazil",
+                                                           "China",
+                                                           "South Africa",
+                                                           "France",
+                                                           "US",
+                                                           "Germany",
+                                                           "Britain",
+                                                           "Japan",
+                                                           "Norway"))) +
+  scale_x_continuous(name = "Corruption Perception Index, 2011 (10=least corrupt)",
+                     limits = c(1.0, 10.0),
+                     breaks = 1:10) +
+  scale_y_continuous(name = "Human Development Index, 2011 (1=best)",
+                     limits = c(0.2, 1.0),
+                     breaks = seq(0.2, 1.0, by = 0.1)) +
+  scale_color_brewer(palette = "Dark2")+
+  scale_alpha_discrete(range = c(0, 1),
+                       guide = FALSE,
+                       ) +
+  scale_linetype(name = "",
+                 breaks = "r2",
+                 labels = list(bquote(R^2==.(mR2))),
+                 guide = guide_legend(override.aes = list(linetype = 1, size = 2,
+                                                          color = "red"), order=2)) +
+  ggtitle("Corruption and human development") +
+  labs(caption="Sources: Transparency International; UN Human Development Report") +
+  theme_bw() +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.grid.major.y = element_line(color = "gray"),
+        axis.title.x = element_text(face="italic"),
+        axis.title.y = element_text(face="italic"),
+        legend.position = "top",
+        legend.direction = "horizontal",
+        legend.box = "horizontal",
+        legend.text = element_text(size = 12),
+        plot.caption = element_text(hjust=0),
+        plot.title = element_text(size = 16, face = "bold"))
+```
+
+![Corruption](imagens/Corruption.png)
+
+
+# Problema 2: Minard
+
+Reproduza o gráfico de Minard que representa a jornada do lider político Napoleão ao levar seu exército para a Campanha Russa. O tutorial se encontra em https://www.andrewheiss.com/blog/2017/08/10/exploring-minards-1812-plot-with-ggplot2/.
+
+**Resposta:**
+
+Foi acrescentado ao gráfico do Minard uma representação visual por cores das temperaturas no caminho de volta.
+
+
+```{r , eval = FALSE}
+#Dados
+cities <- read.table("cities.txt",
+                     header = TRUE, stringsAsFactors = FALSE)
+
+troops <- read.table("troops.txt",
+                     header = TRUE, stringsAsFactors = FALSE)
+
+temps <- read.table("temps.txt",
+                    header = TRUE, stringsAsFactors = FALSE) %>%
+  mutate(date = dmy(date)) 
+
+troops_temp <- read_csv("troops_t.csv")
+
+#Mapa
+march.1812.ne.europe <- c(left = 23.5, bottom = 53.4, right = 38.1, top = 56.3)
+
+march.1812.ne.europe.map <- get_stamenmap(bbox = march.1812.ne.europe, zoom = 8,
+                                          maptype = "terrain-background", where = "cache")
+```
+
+```{r, eval = FALSE}
+#windowsFonts("Open Sans Condensed Bold" = windowsFont("Open Sans Condensed Bold"))
+march.1812.plot <- ggmap(march.1812.ne.europe.map) +
+  #Going
+  geom_path(data = troops[troops$direction=='A',], 
+            aes(x = long, y = lat, group = group, size = survivors, color=direction),
+            lineend = "round",
+            color="#DFC17E") +
+  #Coming back
+   geom_path(data = troops_temp[troops_temp$direction=='R',], 
+            aes(x = long,
+                y = lat, 
+                group = group, 
+                color=as.numeric(temperature),
+                size = survivors),
+            lineend = "round") +
+  scale_color_gradient(low="#D0efff", high="#03254c")+
+  geom_point(data = cities, aes(x = long, y = lat),
+             color = "#DC5B44") +
+  scale_size(range = c(0.5, 10)) + 
+  geom_text_repel(data = cities, aes(x = long, y = lat, label = city),
+                  color = "#DC5B44", family = "Open Sans Condensed Bold" ) +
+ theme_nothing()
+
+#Gráfico com as temperaturas
+temps.nice <- temps %>%
+  mutate(nice.label = paste0(temp, "°, ", month, ". ", day))
+
+temps.1812.plot <- ggplot(data = temps.nice, aes(x = long, y = temp)) +
+  geom_line() +
+  
+  geom_label(aes(label = nice.label),
+            family = "Open Sans Condensed Bold", size = 2.5) + 
+  labs(x = NULL, y = "° Celsius") +
+  scale_x_continuous(limits = ggplot_build(march.1812.plot)$layout$panel_ranges[[1]]$x.range) +
+  scale_y_continuous(position = "right") +
+  coord_cartesian(ylim = c(-35, 5)) +  
+  theme_bw(base_family = "Open Sans Condensed Bold") +
+  theme(panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_blank(), axis.ticks = element_blank(),
+        panel.border = element_blank())
+
+#Juntando os plots
+both.1812.plot <- rbind(ggplotGrob(march.1812.plot),
+                        ggplotGrob(temps.1812.plot))
+
+panels <- both.1812.plot$layout$t[grep("panel", both.1812.plot$layout$name)]
+map.panel.height <- both.1812.plot$heights[panels][1]
+both.1812.plot$heights[panels] <- unit(c(map.panel.height, 0.2), "null")
+
+#grid::grid.newpage()
+#grid::grid.draw(both.1812.plot)
+#ggsave(both.1812.plot,filename = "Napoleon.png")
+```
+
+![Minard](imagens/Napoleon.png)
+
+
+# Problema 3: Gapminder
+
+Faça a animação presente em https://towardsdatascience.com/how-to-build-animated-charts-like-hans-rosling-doing-it-all-in-r-570efc6ba382 seguindo os passos lá descritos.
+
+**Resposta:**
+
+  * A ideia inicial era criar uma matriz de plots, onde cada célula comparava os dados dos anos da linha e coluna correspondentes. No entanto, a apresentação ficou muito carregada, dificultando comparar os dados. Então optei por uma apresentação simples dos dados para anos espaçados.
+  
+  * A paleta de cores foi modificada e atribuí transparencia aos círculos para identificar melhor os dados nas superposições.
+  
+```{r, eval = FALSE}
+#Dados
+population_xls <- read.xlsx("indicator gapminder population.xlsx", encoding = "UTF-8",
+                            stringsAsFactors= F, sheetIndex = 1, as.data.frame = TRUE, header=TRUE)
+fertility_xls <- read.xlsx("indicator undata total_fertility.xlsx", encoding = "UTF-8",
+                           stringsAsFactors= F, sheetIndex = 1, as.data.frame = TRUE, header=TRUE)
+lifeexp_xls <- read.xlsx("indicator life_expectancy_at_birth.xlsx", encoding = "UTF-8", 
+                         stringsAsFactors= F, sheetIndex = 1, as.data.frame = TRUE, header=TRUE)
+myvars <- paste("X", 1962:2015, sep="")
+population <- population_xls[c('Total.population',myvars)]
+fertility <- fertility_xls[c('Total.fertility.rate',myvars)]
+lifeexp <- lifeexp_xls[c('Life.expectancy',myvars)]
+#Modifying data
+colnames(population)[1] <- "Country"
+colnames(fertility)[1] <- "Country"
+colnames(lifeexp)[1] <- "Country"
+lifeexp <- lifeexp[1:275,]
+population <- population[1:275,]
+population_m <- melt(population, id=c("Country")) 
+lifeexp_m <- melt(lifeexp, id=c("Country")) 
+fertility_m <- melt(fertility, id=c("Country"))
+colnames(population_m)[3] <- "pop"
+colnames(lifeexp_m)[3] <- "life"
+colnames(fertility_m)[3] <- "fert"
+mydf <- merge(lifeexp_m, fertility_m, by=c("Country","variable"), header =T)
+mydf <- merge(mydf, population_m, by=c("Country","variable"), header =T)
+continent <- gapminder %>% group_by(continent, country) %>% distinct(country, continent)
+continent <- data.frame(lapply(continent, as.character), stringsAsFactors=FALSE)
+colnames(continent)[1] <- "Country"
+mydf_filter <- mydf %>% filter(Country %in% unique(continent$Country))
+mydf_filter <- merge(mydf_filter, continent, by=c("Country"), header =T)
+mydf_filter[is.na(mydf_filter)] <- 0
+mydf_filter <- data.frame(lapply(mydf_filter, as.character), stringsAsFactors=FALSE)
+mydf_filter$variable <- as.integer(as.character(gsub("X","",mydf_filter$variable)))
+colnames(mydf_filter)[colnames(mydf_filter)=="variable"] <- "year"
+mydf_filter$pop <- round(as.numeric(as.character(mydf_filter$pop))/1000000,1)
+mydf_filter$fert <- as.numeric(as.character(mydf_filter$fert))
+mydf_filter$life <- as.numeric(as.character(mydf_filter$life))
+```
+
+```{r, eval = FALSE}
+# Add a global theme
+theme_set(theme_grey()+ theme(legend.box.background = element_rect(),
+                              legend.box.margin = margin(6, 6, 6, 6)))
+p1<- ggplot(mydf_filter[mydf_filter$year=='1964',], 
+            aes(fert, life, size = pop,
+                color = continent, 
+                frame=year)) +
+     ylim(30,100) +  geom_point() +  scale_color_brewer(palette = 'Dark2') 
+
+p2<- ggplot(mydf_filter[mydf_filter$year=='1962'|mydf_filter$year=='1972'|
+                        mydf_filter$year=='1982'|mydf_filter$year=='1992'|
+                        mydf_filter$year=='2002'|mydf_filter$year=='2015',], 
+            aes(fert, life, size = pop, color = continent)) +
+     ylim(30,100)+
+     labs(x="Fertility Rate",
+         y = "Life expectancy at birth (years)", 
+         caption = "(Based on data from Hans Rosling - gapminder.com)", 
+         color = 'Continent',
+         size = "Population (millions)",
+         title = "Life Expectancy and Fertility Rate over the years") + 
+     scale_color_brewer(palette = 'Dark2')+
+     geom_point(alpha=.6)+
+     facet_grid(.~year)
+```
+![HansRosling](imagens/Gapminder.png)
+
+# Problema 4: Atirei o pau no gráfico
+
+Assista o vídeo https://www.youtube.com/watch?v=CJkzf4IZRuk em que o autor realiza um gráfico em Excel. Seguindo os mesmos passos, faça esse gráfico em R.
+
+**Resposta:**
+
+ * Adicionei cores aos títulos de cada eixo y, identificando a que representação eles se referem.
+```{r, eval = FALSE}
+library(readr)
+covid <- read.csv("covid.csv")
+covid <- data.frame(data = covid$data,
+                    n_obito_log = log(covid$to),
+                    taxa_de_crescimento = covid$txcresc)
+covid <- covid[order(covid$n_obito_log, decreasing = TRUE),][1:19,]
+coeff <- 8
+to <- rgb(0.9, 0.49, 0.13)
+no <- rgb(0.2, 0.596, 0.8588)
+
+ggplot(covid, aes(x=data)) + 
+  geom_line( aes(y=n_obito_log), group = 1, size = 1.3, colour = to) + 
+  geom_point( aes(y=n_obito_log), size = 2, color = to)+
+  geom_line( aes(y=taxa_de_crescimento * coeff), group = 1, size = 1.3, colour = no) +
+  geom_point( aes(y=taxa_de_crescimento * coeff), size = 2, color = no)+
+  scale_y_continuous(sec.axis = sec_axis(~./coeff, name="Taxa de crescimento"))+ 
+  theme_minimal()+
+  labs(title="Morte por Covid-19",
+       x="Data",
+       y= "Número de óbitos (Log)")+
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        axis.title.y.left = element_text(colour=to, face="bold"),
+        axis.title.y.right = element_text(colour=no, face="bold"),
+        plot.title = element_text(hjust = 0.5))
+
+#ggsave("Covid.png")
+```
+
+![Covid-19](imagens/Covid.png)
+
