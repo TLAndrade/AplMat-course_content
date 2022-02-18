@@ -3,6 +3,6 @@ Algumas visualizações usando dados do Covid:
 
 ![Covid heatmap](img/1-Covid_heatmap.png)
 
-![Covid tree](img/3-tree)
+![Covid tree](img/3-tree.png)
 
-![Covid map](img/2-animation)
+![Covid map](img/2-animation.png)
